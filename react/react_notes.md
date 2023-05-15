@@ -212,6 +212,7 @@ meu-projeto > src  ***> app.js***
 import './App.css'
 import HelloWorld from './components/HelloWorld'
 import SayMyName from './components/SayMyName'
+import Pessoa from './components/Pessoa'
 
 function App() {
 	...
@@ -228,3 +229,175 @@ function App() {
 }
 ...
 ```
+
+## Adicionando CSS
+
+- Pode ser adicionado de forma global, por meio do arquivo `index.css`, por exemplo
+- Também é possível estilizar a nível de componentes
+    - CSS modules
+        1. Criar `Componente.module.css`
+        2. Chamar no componente
+
+meu-projeto > src  ***> components > frase.module.css***
+
+```css
+.fraseContainer {
+	background-color: #333;
+	border: 1px solid #111;
+}
+
+.fraseContent {
+	color: #fff;
+	background-color: #333;
+	margin: 0;
+}
+```
+
+meu-projeto > src > ***components > frase.js***
+
+```jsx
+import styles from '/frase.module.css'
+
+function Frase() {
+	return (
+		<div className={styles.fraseContainer}>
+			<p>Este é um componente com uma frase!</p>
+		</div>
+	)
+}
+
+export default Frase
+```
+
+meu-projeto > src > ***app.js***
+
+```jsx
+// importando
+import './App.css'
+import HelloWorld from './components/HelloWorld'
+import SayMyName from './components/SayMyName'
+import Pessoa from './components/Pessoa'
+import Frase from './components/Frase'
+
+function App() {
+	...
+	return (
+		...
+		<HelloWorld />
+		<Frase />
+		<SayMyName nome="Matheus" />
+		<Pessoa 
+			nome="Jasmine"
+			idade="22"
+			profisao="programadora"
+			foto="#link" />
+	)
+}
+...
+```
+
+## Fragmentos
+
+- Permite a criação de componentes sem elemento pai
+- Descomplicar os nós do dom
+- A sintaxe é `<>` e `</>` , não é necessário um nome para a tag
+
+meu-projeto > src > ***components > List.js***
+
+```jsx
+function List() {
+	return (
+		<div>
+			<h1>Minha lista</h1>
+			<ul>
+				<li> Item 1 </li>
+				<li> Item 2 </li>
+			</ul>
+		</div>
+	)
+}
+
+export default List
+```
+
+- A div não faz sentido, pode ser desnecessária e poluir o código. Por isso usamos o react fragments.
+
+meu-projeto > src > ***components > List.js***
+
+```jsx
+function List() {
+	return (
+		<>
+			<h1>Minha lista</h1>
+			<ul>
+				<li> Item 1 </li>
+				<li> Item 2 </li>
+			</ul>
+		</>
+	)
+}
+
+export default List
+```
+
+```markdown
+# Nem sempre a div é desnecessária, pode ser útil para criar um card, por exemplo. Quando não é o caso, o react fragments é usado pra simplicar o DOM, já que é um elemento a menos sendo criado. 
+```
+
+## Avançando em props
+
+- Definir tipos para as props
+    - Definindo em um objeto `propTypes` no próprio componente
+- Definir um valor padrão
+    - Utilizando o objeto `defaultProps`
+
+meu-projeto > src > ***components > List.js***
+
+```jsx
+import Item from './Item'
+function List() {
+	return (
+		<>
+			<h1>Minha lista</h1>
+			<ul>
+				<Item marca="Ferrari" ano_lancamento={1985} />
+				<Item marca="Fiat" ano_lancamento={1964} />
+				<Item marca="Renault" />
+			</ul>
+		</>
+	)
+}
+
+export default List
+```
+
+meu-projeto > src > ***components > Item.js***
+
+```jsx
+import PropTypes from 'prop-types' // ja vem com o react
+
+function Item({ marca, ano_lancamento }) {
+	return (
+		<>
+			<li> 
+				{marca} - {ano_lancamento}
+			</li>
+		</>
+	)
+}
+
+Item.propTypes = { // perceba que o propTypes é com letra minuscula
+	marca: PropTypes.string.isRequired,
+	ano_lancamento: PropTypes.numer,
+}
+
+Item.defaultProps = {
+	marca: 'Faltou a marca',
+	ano_lancamento: 0,
+}
+
+export default Item
+```
+
+- Se colocarmos `marca={1}` vai aparecer um erro no console.
+- Se deixarmos em branco também, pois colocamos o `isRequired`
